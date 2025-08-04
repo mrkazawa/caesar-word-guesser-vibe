@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Caesar Word Guesser</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div
+      class="container min-vh-100 d-flex justify-content-center align-items-center"
+    >
+      <div class="w-100" style="max-width: 400px">
+        <div id="gameContainer"></div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Load caesarCipher.js
+      let caesarCipher;
+      let encrypt;
+      let decrypt;
+      // Load questions.json
+      let questions = [];
+      let selectedWord = "";
+      let encryptedWord = "";
+      let key = 0;
+
+      // Fetch questions.json
+      fetch("questions.json")
+        .then((response) => response.json())
+        .then((data) => {
+          questions = data;
+        });
+
+      // Caesar cipher implementation (copied from caesarCipher.js)
+      caesarCipher = function (text, key) {
+        return text
+          .split("")
+          .map((char) => {
+            if (char.match(/[a-z]/)) {
+              let code = char.charCodeAt(0);
+              return String.fromCharCode(((code - 97 + key + 26) % 26) + 97);
+            } else if (char.match(/[A-Z]/)) {
+              let code = char.charCodeAt(0);
+              return String.fromCharCode(((code - 65 + key + 26) % 26) + 65);
+            } else {
+              return char;
+            }
+          })
+          .join("");
+      };
+      encrypt = function (text, key) {
+        return caesarCipher(text, key);
+      };
+      decrypt = function (text, key) {
+        return caesarCipher(text, -key);
+      };
+
+      // Render home screen
+      function renderHome() {
+        document.getElementById("gameContainer").innerHTML = `
+          <h2 class="card-title text-center mb-4">Start Game</h2>
+          <form id="startForm">
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" name="username" required />
+            </div>
+            <div class="mb-3">
+              <label for="school" class="form-label">School</label>
+              <input type="text" class="form-control" id="school" name="school" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Play</button>
+          </form>
+        `;
+        document
+          .getElementById("startForm")
+          .addEventListener("submit", startGame);
+      }
+
+      // Render question screen
+      function renderQuestion() {
+        // Select a random word
+        if (questions.length === 0) {
+          alert("Questions not loaded yet. Please try again.");
+          return;
+        }
+        // Get username from previous form
+        const username = document.getElementById("username").value;
+        // Start timer
+        let startTime = Date.now();
+        let timerInterval;
+        function formatTime(ms) {
+          const totalSeconds = Math.floor(ms / 1000);
+          const minutes = String(Math.floor(totalSeconds / 60)).padStart(
+            2,
+            "0"
+          );
+          const seconds = String(totalSeconds % 60).padStart(2, "0");
+          return `${minutes}:${seconds}`;
+        }
+        // Select word and encrypt
+        const randomIndex = Math.floor(Math.random() * questions.length);
+        selectedWord = questions[randomIndex].word;
+        key = Math.floor(Math.random() * 25) + 1; // key between 1 and 25
+        encryptedWord = encrypt(selectedWord, key).toUpperCase();
+
+        function buildAlphabetTable(key) {
+          const real = Array.from({ length: 26 }, (_, i) =>
+            String.fromCharCode(65 + i)
+          );
+          const shifted = real.map((c, i) =>
+            String.fromCharCode(65 + ((i + key) % 26))
+          );
+          const usedReal = Array.from(
+            new Set(selectedWord.toUpperCase().split(""))
+          );
+          const usedShifted = Array.from(new Set(encryptedWord.split("")));
+          let blankReal = new Set();
+          let blankShifted = new Set();
+          usedReal.forEach((letter) => {
+            let idx = real.indexOf(letter);
+            if (idx !== -1) {
+              if (Math.random() < 0.5) {
+                blankReal.add(letter);
+              } else {
+                blankShifted.add(shifted[idx]);
+              }
+            }
+          });
+          let rows = [];
+          for (let i = 0; i < 26; i += 9) {
+            rows.push({
+              real: real
+                .slice(i, i + 9)
+                .map((c) => (blankReal.has(c) ? "" : c)),
+              shifted: shifted
+                .slice(i, i + 9)
+                .map((c) => (blankShifted.has(c) ? "" : c)),
+            });
+          }
+          let html = `<table class='table table-bordered text-center align-middle mt-3'>
+            <thead>
+              <tr><th colspan='9'>Alphabet Mapping (Key: ${key})</th></tr>
+            </thead>
+            <tbody>`;
+          rows.forEach((row) => {
+            html +=
+              `<tr>` +
+              row.real
+                .map(
+                  (c) =>
+                    `<th style='background-color:#e3f2fd;color:#1565c0;'>${
+                      c || "&nbsp;"
+                    }</th>`
+                )
+                .join("") +
+              `</tr>`;
+            html +=
+              `<tr>` +
+              row.shifted
+                .map(
+                  (c) =>
+                    `<td style='background-color:#fff3e0;color:#e65100;'>${
+                      c || "&nbsp;"
+                    }</td>`
+                )
+                .join("") +
+              `</tr>`;
+          });
+          html += `</tbody></table>`;
+          html += `<div class='d-flex justify-content-center gap-3 mb-2'>
+            <span class='badge' style='background-color:#e3f2fd;color:#1565c0;'>Real Alphabet</span>
+            <span class='badge' style='background-color:#fff3e0;color:#e65100;'>Shifted Alphabet</span>
+          </div>`;
+          return html;
+        }
+
+        document.getElementById("gameContainer").innerHTML = `
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold">👤 ${username}</span>
+            <span class="fw-bold" id="timer">00:00</span>
+          </div>
+          <h2 class="card-title text-center mb-4">Guess the Word</h2>
+          <div class="mb-3">
+            <label class="form-label">Encrypted Word</label>
+            <div class="form-control text-center mb-2" readonly style="font-weight:bold; font-size:1.2rem; color: red; text-transform: uppercase;">${encryptedWord}</div>
+          </div>
+          ${buildAlphabetTable(key)}
+          <form id="answerForm">
+            <div class="mb-3">
+              <label for="answer" class="form-label">Your Answer</label>
+              <input type="text" class="form-control" id="answer" name="answer" required autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-success w-100">Submit</button>
+          </form>
+          <!-- Toast for wrong answer (center top) -->
+          <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 11">
+            <div id="wrongToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="d-flex">
+                <div class="toast-body">
+                  Incorrect. Try again!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+            </div>
+          </div>
+        `;
+        // Start timer interval
+        timerInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          document.getElementById("timer").textContent = formatTime(elapsed);
+        }, 1000);
+        document
+          .getElementById("answerForm")
+          .addEventListener("submit", submitAnswer);
+      }
+
+      // Render result screen
+      function renderResult(word, trivia) {
+        document.getElementById("gameContainer").innerHTML = `
+          <h2 class="card-title mb-4 text-success text-center">Correct!</h2>
+          <p class="text-center">The word was <strong>${word}</strong></p>
+          <p class="text-center text-secondary" style="font-style:italic;">
+            <span style="font-size:1.2em;">💡</span> Did you know? ${trivia}
+          </p>
+          <button id="homeBtn" class="btn btn-primary mt-3 w-100">Home</button>
+        `;
+        // Stop timer if running
+        if (typeof timerInterval !== "undefined") {
+          clearInterval(timerInterval);
+        }
+        document
+          .getElementById("homeBtn")
+          .addEventListener("click", renderHome);
+      }
+
+      // Start game handler
+      function startGame(e) {
+        e.preventDefault();
+        renderQuestion();
+      }
+
+      // Submit answer handler
+      function submitAnswer(ev) {
+        ev.preventDefault();
+        const userAnswer = document
+          .getElementById("answer")
+          .value.trim()
+          .toLowerCase();
+        if (userAnswer === selectedWord.toLowerCase()) {
+          const triviaObj = questions.find(
+            (q) => q.word.toLowerCase() === selectedWord.toLowerCase()
+          );
+          renderResult(selectedWord, triviaObj ? triviaObj.trivia : "");
+        } else {
+          const toastEl = document.getElementById("wrongToast");
+          const toast = new bootstrap.Toast(toastEl);
+          toast.show();
+        }
+      }
+
+      // Initial render
+      renderHome();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

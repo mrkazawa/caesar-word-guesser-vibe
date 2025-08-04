@@ -1,0 +1,110 @@
+[
+  {
+    "word": "mouse",
+    "trivia": "The computer mouse was invented by Douglas Engelbart in 1964 and was originally made of wood."
+  },
+  {
+    "word": "keyboard",
+    "trivia": "The QWERTY keyboard layout was designed in the 1870s for typewriters and is still used for most computers today."
+  },
+  {
+    "word": "data",
+    "trivia": "The word 'data' is the plural of 'datum', which means a single piece of information."
+  },
+  {
+    "word": "monitor",
+    "trivia": "Early computer monitors were monochrome and could only display one color, usually green or amber."
+  },
+  {
+    "word": "processor",
+    "trivia": "The first microprocessor, the Intel 4004, was released in 1971 and could execute 60,000 operations per second."
+  },
+  {
+    "word": "RAM",
+    "trivia": "RAM stands for Random Access Memory and is used for temporary data storage while a computer is running."
+  },
+  {
+    "word": "internet",
+    "trivia": "The internet was originally called ARPANET and was developed by the U.S. Department of Defense in the late 1960s."
+  },
+  {
+    "word": "software",
+    "trivia": "Software refers to the programs and operating information used by a computer, as opposed to the physical hardware."
+  },
+  {
+    "word": "algorithm",
+    "trivia": "The word 'algorithm' comes from the name of Persian mathematician Al-Khwarizmi, who lived in the 9th century."
+  },
+  {
+    "word": "cache",
+    "trivia": "Cache memory is a small-sized type of volatile computer memory that provides high-speed data access to the processor."
+  },
+  {
+    "word": "bit",
+    "trivia": "A bit is the smallest unit of data in a computer, representing a binary value of 0 or 1."
+  },
+  {
+    "word": "byte",
+    "trivia": "A byte consists of 8 bits and is the basic unit of data storage in computers."
+  },
+  {
+    "word": "chip",
+    "trivia": "A chip is a small piece of semiconducting material on which an integrated circuit is embedded."
+  },
+  {
+    "word": "cloud",
+    "trivia": "Cloud computing allows users to store and access data and programs over the internet instead of on a local computer."
+  },
+  {
+    "word": "server",
+    "trivia": "A server is a computer or system that provides resources, data, services, or programs to other computers, known as clients, over a network."
+  },
+  {
+    "word": "pixel",
+    "trivia": "A pixel is the smallest unit of a digital image or graphic that can be displayed and represented on a digital display device."
+  },
+  {
+    "word": "router",
+    "trivia": "A router is a networking device that forwards data packets between computer networks."
+  },
+  {
+    "word": "syntax",
+    "trivia": "Syntax refers to the rules that define the combinations of symbols that are considered to be correctly structured programs in a programming language."
+  },
+  {
+    "word": "database",
+    "trivia": "A database is an organized collection of structured information, or data, typically stored electronically in a computer system."
+  },
+  {
+    "word": "system",
+    "trivia": "A system is a set of interacting or interdependent components forming an integrated whole."
+  },
+  {
+    "word": "network",
+    "trivia": "A network is a group of two or more computer systems linked together to share resources and information."
+  },
+  {
+    "word": "input",
+    "trivia": "Input refers to data or signals entered into a computer for processing."
+  },
+  {
+    "word": "output",
+    "trivia": "Output is the information produced by a computer after processing input data."
+  },
+  {
+    "word": "security",
+    "trivia": "Security in information systems refers to the protection of data and systems from unauthorized access and threats."
+  },
+  {
+    "word": "audit",
+    "trivia": "An audit in information systems is an examination of controls within an organization's IT infrastructure."
+  },
+  {
+    "word": "backup",
+    "trivia": "A backup is a copy of data stored separately to protect against loss or damage."
+  },
+  {
+    "word": "encryption",
+    "trivia": "Encryption is the process of converting information or data into a code to prevent unauthorized access."
+  }
+]
