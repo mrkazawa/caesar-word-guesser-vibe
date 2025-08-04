@@ -106,5 +106,185 @@
   {
     "word": "encryption",
     "trivia": "Encryption is the process of converting information or data into a code to prevent unauthorized access."
+  },
+  {
+    "word": "firewall",
+    "trivia": "A firewall is a network security device that monitors and filters incoming and outgoing network traffic based on security rules."
+  },
+  {
+    "word": "malware",
+    "trivia": "Malware is software designed to disrupt, damage, or gain unauthorized access to computer systems."
+  },
+  {
+    "word": "phishing",
+    "trivia": "Phishing is a cyberattack that uses disguised emails to trick recipients into revealing personal information."
+  },
+  {
+    "word": "domain",
+    "trivia": "A domain is a unique name that identifies a website on the internet."
+  },
+  {
+    "word": "compiler",
+    "trivia": "A compiler is a program that translates source code written in a programming language into machine code."
+  },
+  {
+    "word": "debugging",
+    "trivia": "Debugging is the process of finding and fixing errors or bugs in software code."
+  },
+  {
+    "word": "interface",
+    "trivia": "An interface is a shared boundary across which two or more separate components of a computer system exchange information."
+  },
+  {
+    "word": "virtualization",
+    "trivia": "Virtualization allows multiple operating systems to run on a single physical machine."
+  },
+  {
+    "word": "bandwidth",
+    "trivia": "Bandwidth is the maximum rate of data transfer across a given path in a network."
+  },
+  {
+    "word": "protocol",
+    "trivia": "A protocol is a set of rules governing the exchange or transmission of data between devices."
+  },
+  {
+    "word": "token",
+    "trivia": "A token is a piece of data used in authentication and authorization processes in information systems."
+  },
+  {
+    "word": "portal",
+    "trivia": "A portal is a website or service that offers a broad array of resources and services, such as email, forums, and search engines."
+  },
+  {
+    "word": "spreadsheet",
+    "trivia": "A spreadsheet is a digital worksheet used for organizing, analyzing, and storing data in tabular form."
+  },
+  {
+    "word": "dashboard",
+    "trivia": "A dashboard is a user interface that organizes and presents information in an easy-to-read format."
+  },
+  {
+    "word": "logic",
+    "trivia": "Logic in computing refers to the use of reasoning to perform operations and solve problems."
+  },
+  {
+    "word": "query",
+    "trivia": "A query is a request for information from a database."
+  },
+  {
+    "word": "archive",
+    "trivia": "An archive is a collection of historical records and documents stored digitally for long-term preservation."
+  },
+  {
+    "word": "LAN",
+    "trivia": "LAN stands for Local Area Network, a network that connects computers within a limited area such as a building."
+  },
+  {
+    "word": "WAN",
+    "trivia": "WAN stands for Wide Area Network, a network that covers a broad area such as a city, country, or even global connections."
+  },
+  {
+    "word": "ethernet",
+    "trivia": "Ethernet is a widely used technology for local area networks, enabling devices to communicate via wired connections."
+  },
+  {
+    "word": "cloudcomputing",
+    "trivia": "Cloud computing delivers computing services over the internet, including storage, processing, and software."
+  },
+  {
+    "word": "AI",
+    "trivia": "AI stands for Artificial Intelligence, which enables machines to mimic human intelligence and perform tasks."
+  },
+  {
+    "word": "machinelearning",
+    "trivia": "Machine learning is a branch of AI that allows computers to learn from data and improve over time without being explicitly programmed."
+  },
+  {
+    "word": "blockchain",
+    "trivia": "Blockchain is a distributed ledger technology that securely records transactions across many computers."
+  },
+  {
+    "word": "virtualreality",
+    "trivia": "Virtual reality is a simulated experience that can be similar to or completely different from the real world."
+  },
+  {
+    "word": "authentication",
+    "trivia": "Authentication is the process of verifying the identity of a user or device."
+  },
+  {
+    "word": "authorization",
+    "trivia": "Authorization determines what resources a user or device can access in an information system."
+  },
+  {
+    "word": "SSD",
+    "trivia": "SSD stands for Solid State Drive, a type of storage device that uses flash memory and is faster than traditional hard drives."
+  },
+  {
+    "word": "HTML",
+    "trivia": "HTML stands for HyperText Markup Language and is the standard language for creating web pages."
+  },
+  {
+    "word": "URL",
+    "trivia": "URL stands for Uniform Resource Locator and is the address used to access resources on the internet."
+  },
+  {
+    "word": "opensource",
+    "trivia": "Open source software is software whose source code is available for modification or enhancement by anyone."
+  },
+  {
+    "word": "binary",
+    "trivia": "Binary is a base-2 numeral system used by computers, consisting of only 0s and 1s."
+  },
+  {
+    "word": "password",
+    "trivia": "A password is a secret word or phrase used to authenticate access to a computer system or service."
+  },
+  {
+    "word": "cookie",
+    "trivia": "A cookie is a small piece of data stored on the user's computer by a web browser while browsing a website."
+  },
+  {
+    "word": "script",
+    "trivia": "A script is a set of instructions written in a programming language to automate tasks."
+  },
+  {
+    "word": "function",
+    "trivia": "A function is a block of organized, reusable code that performs a single action in programming."
+  },
+  {
+    "word": "object",
+    "trivia": "An object is a data structure in programming that contains properties and methods."
+  },
+  {
+    "word": "class",
+    "trivia": "A class is a blueprint for creating objects in object-oriented programming."
+  },
+  {
+    "word": "array",
+    "trivia": "An array is a data structure that can hold multiple values, typically of the same type, in programming."
+  },
+  {
+    "word": "stack",
+    "trivia": "A stack is a data structure that follows the Last In, First Out (LIFO) principle."
+  },
+  {
+    "word": "queue",
+    "trivia": "A queue is a data structure that follows the First In, First Out (FIFO) principle."
+  },
+  {
+    "word": "encryptionkey",
+    "trivia": "An encryption key is a piece of information used in cryptography to encrypt and decrypt data."
+  },
+  {
+    "word": "processorcore",
+    "trivia": "A processor core is an individual processing unit within a computer's CPU."
+  },
+  {
+    "word": "motherboard",
+    "trivia": "The motherboard is the main circuit board of a computer, connecting all components together."
+  },
+  {
+    "word": "operatingsystem",
+    "trivia": "An operating system is system software that manages computer hardware, software resources, and provides common services."
   }
 ]
