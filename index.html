@@ -9,17 +9,94 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <style>
+      .game-header {
+        color: #0d1a4a;
+        font-family: "Segoe UI", "Arial", sans-serif;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      /* Rank colors for leaderboard */
+      .rank-gold {
+        color: #8d6a00 !important;
+        font-weight: bold;
+      }
+      .rank-silver {
+        color: #444444 !important;
+        font-weight: bold;
+      }
+      .rank-copper {
+        color: #5a2e0c !important;
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
     <div
       class="container min-vh-100 d-flex justify-content-center align-items-center"
     >
-      <div class="w-100" style="max-width: 400px">
+      <div class="w-100">
         <div id="gameContainer"></div>
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+      // Leaderboard helpers
+      function getLeaderboard() {
+        return JSON.parse(localStorage.getItem("leaderboard") || "[]");
+      }
+      function saveLeaderboard(entry) {
+        const leaderboard = getLeaderboard();
+        leaderboard.push(entry);
+        localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+      }
+      function leaderboardTableHtml() {
+        const leaderboard = getLeaderboard()
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 10); // Only show top 10
+        let html = `
+<table class="table table-sm table-bordered text-center mb-4">
+  <thead class="table-primary">
+    <tr>
+      <th>Rank</th>
+      <th>Username</th>
+      <th>School</th>
+      <th>Score</th>
+    </tr>
+  </thead>
+  <tbody>
+`;
+        for (let i = 0; i < 10; i++) {
+          const entry = leaderboard[i];
+          let rankDisplay = "-";
+          let rankClass = "";
+          if (i === 0) {
+            rankDisplay = "🥇";
+            rankClass = "rank-gold";
+          } else if (i === 1) {
+            rankDisplay = "🥈";
+            rankClass = "rank-silver";
+          } else if (i === 2) {
+            rankDisplay = "🥉";
+            rankClass = "rank-copper";
+          } else if (entry) {
+            rankDisplay = String(i + 1);
+          }
+          html += `
+    <tr>
+      <td class="${rankClass}">${rankDisplay}</td>
+      <td class="${rankClass}">${entry ? entry.username : "-"}</td>
+      <td class="${rankClass}">${entry ? entry.school : "-"}</td>
+      <td class="${rankClass}">${entry ? entry.score : "-"}</td>
+    </tr>
+`;
+        }
+        html += `
+  </tbody>
+</table>
+`;
+        return html;
+      }
       // Load caesarCipher.js
       let caesarCipher;
       let encrypt;
@@ -29,6 +106,9 @@
       let selectedWord = "";
       let encryptedWord = "";
       let key = 0;
+      // Move startTime and timerInterval to global scope
+      let startTime;
+      let timerInterval;
 
       // Fetch questions.json
       fetch("questions.json")
@@ -64,22 +144,56 @@
       // Render home screen
       function renderHome() {
         document.getElementById("gameContainer").innerHTML = `
-          <h2 class="card-title text-center mb-4">Start Game</h2>
-          <form id="startForm">
-            <div class="mb-3">
-              <label for="username" class="form-label">Username</label>
-              <input type="text" class="form-control" id="username" name="username" required />
+          <div class="row justify-content-center">
+            <div class="col-md-5 col-12 mb-4 mb-md-0 pe-md-5 pe-4">
+              <h2 class="game-header text-center mb-4">Guess The Word</h2>
+              <form id="startForm">
+                <div class="mb-3">
+                  <label for="username" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="username" name="username" required />
+                </div>
+                <div class="mb-3">
+                  <label for="school" class="form-label">School</label>
+                  <input type="text" class="form-control" id="school" name="school" required />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Play</button>
+              </form>
             </div>
-            <div class="mb-3">
-              <label for="school" class="form-label">School</label>
-              <input type="text" class="form-control" id="school" name="school" required />
+            <div class="col-md-7 col-12 ps-md-5 ps-4">
+              <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="game-header text-center mb-0">Leaderboard</h2>
+                <button id="clearLeaderboardBtn" class="btn btn-danger ms-3">Clear Table</button>
+              </div>
+              <div id="leaderboardContainer">
+                ${leaderboardTableHtml()}
+              </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Play</button>
-          </form>
+          </div>
         `;
         document
           .getElementById("startForm")
           .addEventListener("submit", startGame);
+        // Add clear leaderboard button handler
+        const clearBtn = document.getElementById("clearLeaderboardBtn");
+        if (clearBtn) {
+          clearBtn.onclick = function () {
+            if (
+              confirm("Are you sure you want to clear the leaderboard table?")
+            ) {
+              localStorage.removeItem("leaderboard");
+              // Re-render leaderboard only
+              document.getElementById("leaderboardContainer").innerHTML =
+                leaderboardTableHtml();
+              // Re-attach handler after re-render
+              const newClearBtn = document.getElementById(
+                "clearLeaderboardBtn"
+              );
+              if (newClearBtn) {
+                newClearBtn.onclick = clearBtn.onclick;
+              }
+            }
+          };
+        }
       }
 
       // Render question screen
@@ -92,7 +206,7 @@
         // Get username from previous form
         const username = document.getElementById("username").value;
         // Start timer
-        let startTime = Date.now();
+        startTime = Date.now();
         let timerInterval;
         function formatTime(ms) {
           const totalSeconds = Math.floor(ms / 1000);
@@ -133,19 +247,19 @@
             }
           });
           let rows = [];
-          for (let i = 0; i < 26; i += 9) {
+          for (let i = 0; i < 26; i += 13) {
             rows.push({
               real: real
-                .slice(i, i + 9)
+                .slice(i, i + 13)
                 .map((c) => (blankReal.has(c) ? "" : c)),
               shifted: shifted
-                .slice(i, i + 9)
+                .slice(i, i + 13)
                 .map((c) => (blankShifted.has(c) ? "" : c)),
             });
           }
           let html = `<table class='table table-bordered text-center align-middle mt-3'>
             <thead>
-              <tr><th colspan='9'>Alphabet Mapping (Key: ${key})</th></tr>
+              <tr><th colspan='13'>Alphabet Mapping (Key: ${key})</th></tr>
             </thead>
             <tbody>`;
           rows.forEach((row) => {
@@ -182,10 +296,10 @@
 
         document.getElementById("gameContainer").innerHTML = `
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="fw-bold">👤 ${username}</span>
-            <span class="fw-bold" id="timer">00:00</span>
+            <span class="fw-bold" style="color:#1565c0;"><svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='#1565c0' class='bi bi-person-fill me-1' viewBox='0 0 16 16'><path d='M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'/></svg> ${username}</span>
+            <h2 class="card-title text-center mb-0 flex-grow-1" style="color:#0d1a4a; letter-spacing:1px; font-weight:bold; font-family:'Segoe UI','Arial',sans-serif;">Guess The Word</h2>
+            <span class="fw-bold" id="timer" style="color:#1565c0;">00:00</span>
           </div>
-          <h2 class="card-title text-center mb-4">Guess the Word</h2>
           <div class="mb-3">
             <label class="form-label">Encrypted Word</label>
             <div class="form-control text-center mb-2" readonly style="font-weight:bold; font-size:1.2rem; color: red; text-transform: uppercase;">${encryptedWord}</div>
@@ -222,13 +336,35 @@
 
       // Render result screen
       function renderResult(word, trivia) {
+        // Get username and school from previous form values
+        let username = localStorage.getItem("lastUsername") || "";
+        let school = localStorage.getItem("lastSchool") || "";
+        // Fallback if not set
+        if (!username && document.getElementById("username")) {
+          username = document.getElementById("username").value;
+        }
+        if (!school && document.getElementById("school")) {
+          school = document.getElementById("school").value;
+        }
+        const timeSec = Math.max(
+          1,
+          Math.round(
+            (typeof startTime !== "undefined" ? Date.now() - startTime : 0) /
+              1000
+          )
+        );
+        const score = Math.round((word.length * 1000) / timeSec);
+        saveLeaderboard({ username, school, word, time: timeSec, score });
         document.getElementById("gameContainer").innerHTML = `
           <h2 class="card-title mb-4 text-success text-center">Correct!</h2>
           <p class="text-center">The word was <strong>${word}</strong></p>
           <p class="text-center text-secondary" style="font-style:italic;">
             <span style="font-size:1.2em;">💡</span> Did you know? ${trivia}
           </p>
-          <button id="homeBtn" class="btn btn-primary mt-3 w-100">Home</button>
+          <p class="text-center mb-2"><strong>Time:</strong> ${timeSec} seconds<br><strong>Score:</strong> ${score}</p>
+          <div class="d-flex justify-content-center">
+            <button id="homeBtn" class="btn btn-primary mt-3 px-5">Home</button>
+          </div>
         `;
         // Stop timer if running
         if (typeof timerInterval !== "undefined") {
@@ -242,6 +378,11 @@
       // Start game handler
       function startGame(e) {
         e.preventDefault();
+        // Save username and school for later use
+        const username = document.getElementById("username").value;
+        const school = document.getElementById("school").value;
+        localStorage.setItem("lastUsername", username);
+        localStorage.setItem("lastSchool", school);
         renderQuestion();
       }
 
