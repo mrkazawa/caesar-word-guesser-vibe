@@ -169,6 +169,28 @@
               </div>
             </div>
           </div>
+          <!-- Modal for password input -->
+          <div class="modal fade" id="clearModal" tabindex="-1" aria-labelledby="clearModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="clearModalLabel">Clear Leaderboard</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label for="clearPassword" class="form-label">Enter password to clear:</label>
+                    <input type="password" class="form-control" id="clearPassword" autocomplete="off" />
+                  </div>
+                  <div id="clearError" class="text-danger small" style="display:none;">Incorrect password.</div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary" id="confirmClearBtn">Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
         `;
         document
           .getElementById("startForm")
@@ -177,21 +199,30 @@
         const clearBtn = document.getElementById("clearLeaderboardBtn");
         if (clearBtn) {
           clearBtn.onclick = function () {
-            if (
-              confirm("Are you sure you want to clear the leaderboard table?")
-            ) {
-              localStorage.removeItem("leaderboard");
-              // Re-render leaderboard only
-              document.getElementById("leaderboardContainer").innerHTML =
-                leaderboardTableHtml();
-              // Re-attach handler after re-render
-              const newClearBtn = document.getElementById(
-                "clearLeaderboardBtn"
-              );
-              if (newClearBtn) {
-                newClearBtn.onclick = clearBtn.onclick;
+            const clearModal = new bootstrap.Modal(
+              document.getElementById("clearModal")
+            );
+            document.getElementById("clearPassword").value = "";
+            document.getElementById("clearError").style.display = "none";
+            clearModal.show();
+            document.getElementById("confirmClearBtn").onclick = function () {
+              const pwd = document.getElementById("clearPassword").value;
+              if (pwd === "isbmantap") {
+                localStorage.removeItem("leaderboard");
+                document.getElementById("leaderboardContainer").innerHTML =
+                  leaderboardTableHtml();
+                clearModal.hide();
+                // Re-attach handler after re-render
+                const newClearBtn = document.getElementById(
+                  "clearLeaderboardBtn"
+                );
+                if (newClearBtn) {
+                  newClearBtn.onclick = clearBtn.onclick;
+                }
+              } else {
+                document.getElementById("clearError").style.display = "block";
               }
-            }
+            };
           };
         }
       }
