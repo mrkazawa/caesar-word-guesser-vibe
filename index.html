@@ -158,6 +158,9 @@
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Play</button>
               </form>
+              <div class="text-center mt-3">
+                <a href="#" id="howToPlayLink" style="text-decoration:underline;cursor:pointer;">How to play?</a>
+              </div>
             </div>
             <div class="col-md-7 col-12 ps-md-5 ps-4">
               <div class="d-flex align-items-center justify-content-between mb-4">
@@ -170,6 +173,51 @@
             </div>
           </div>
           <!-- Modal for password input -->
+          <!-- Modal for How to Play -->
+          <div class="modal fade" id="howToPlayModal" tabindex="-1" aria-labelledby="howToPlayModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="howToPlayModalLabel">How to Play: Caesar Cipher Example</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p>The Caesar cipher shifts each letter by a fixed number. For example, with a key of <strong>3</strong>:</p>
+                  <table class="table table-bordered text-center mb-3">
+                    <thead>
+                      <tr>
+                        <th colspan="5">Original Word: <span style="color:#1565c0;font-weight:bold;">APPLE</span></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th style="background-color:#e3f2fd;color:#1565c0;">A</th>
+                        <th style="background-color:#e3f2fd;color:#1565c0;">P</th>
+                        <th style="background-color:#e3f2fd;color:#1565c0;">P</th>
+                        <th style="background-color:#e3f2fd;color:#1565c0;">L</th>
+                        <th style="background-color:#e3f2fd;color:#1565c0;">E</th>
+                      </tr>
+                      <tr>
+                        <td style="background-color:#fff3e0;color:#e65100;">D</td>
+                        <td style="background-color:#fff3e0;color:#e65100;">S</td>
+                        <td style="background-color:#fff3e0;color:#e65100;">S</td>
+                        <td style="background-color:#fff3e0;color:#e65100;">O</td>
+                        <td style="background-color:#fff3e0;color:#e65100;">H</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <ul>
+                    <li><strong>Encryption:</strong> Shift each letter by 3. <span style="color:#1565c0;font-weight:bold;">APPLE</span> becomes <span style="color:#e65100;font-weight:bold;">DSSOH</span>.</li>
+                    <li><strong>Decryption:</strong> Shift each letter back by 3. <span style="color:#e65100;">DSSOH</span> becomes <span style="color:#1565c0;font-weight:bold;">APPLE</span>.</li>
+                  </ul>
+                  <p class="mt-2">Try to guess the original word from the encrypted version!</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="modal fade" id="clearModal" tabindex="-1" aria-labelledby="clearModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
@@ -195,6 +243,21 @@
         document
           .getElementById("startForm")
           .addEventListener("submit", startGame);
+
+        // Add How to Play link handler
+        setTimeout(function () {
+          const howToPlayLink = document.getElementById("howToPlayLink");
+          if (howToPlayLink) {
+            howToPlayLink.onclick = function (e) {
+              e.preventDefault();
+              const howToPlayModal = new bootstrap.Modal(
+                document.getElementById("howToPlayModal")
+              );
+              howToPlayModal.show();
+            };
+          }
+        }, 0);
+
         // Add clear leaderboard button handler
         const clearBtn = document.getElementById("clearLeaderboardBtn");
         if (clearBtn) {
@@ -341,7 +404,10 @@
               <label for="answer" class="form-label">Your Answer</label>
               <input type="text" class="form-control" id="answer" name="answer" required autocomplete="off">
             </div>
-            <button type="submit" class="btn btn-success w-100">Submit</button>
+            <div class="d-flex gap-2">
+              <button type="button" id="backBtn" class="btn btn-outline-secondary">Back</button>
+              <button type="submit" class="btn btn-success flex-grow-1">Submit</button>
+            </div>
           </form>
           <!-- Toast for wrong answer (center top) -->
           <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 11">
@@ -360,6 +426,17 @@
           const elapsed = Date.now() - startTime;
           document.getElementById("timer").textContent = formatTime(elapsed);
         }, 1000);
+
+        // Add home button handler
+        document
+          .getElementById("backBtn")
+          .addEventListener("click", function () {
+            if (typeof timerInterval !== "undefined") {
+              clearInterval(timerInterval);
+            }
+            renderHome();
+          });
+
         document
           .getElementById("answerForm")
           .addEventListener("submit", submitAnswer);
