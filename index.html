@@ -51,43 +51,27 @@
         localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
       }
       function leaderboardTableHtml() {
-        const leaderboard = getLeaderboard()
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 10); // Only show top 10
+        const leaderboard = getLeaderboard().slice(-10).reverse(); // 10 most recent
         let html = `
 <table class="table table-sm table-bordered text-center mb-4">
   <thead class="table-primary">
     <tr>
-      <th>Rank</th>
+      <th>#</th>
       <th>Username</th>
       <th>School</th>
-      <th>Score</th>
+      <th>Time (s)</th>
     </tr>
   </thead>
   <tbody>
 `;
         for (let i = 0; i < 10; i++) {
           const entry = leaderboard[i];
-          let rankDisplay = "-";
-          let rankClass = "";
-          if (i === 0) {
-            rankDisplay = "🥇";
-            rankClass = "rank-gold";
-          } else if (i === 1) {
-            rankDisplay = "🥈";
-            rankClass = "rank-silver";
-          } else if (i === 2) {
-            rankDisplay = "🥉";
-            rankClass = "rank-copper";
-          } else if (entry) {
-            rankDisplay = String(i + 1);
-          }
           html += `
     <tr>
-      <td class="${rankClass}">${rankDisplay}</td>
-      <td class="${rankClass}">${entry ? entry.username : "-"}</td>
-      <td class="${rankClass}">${entry ? entry.school : "-"}</td>
-      <td class="${rankClass}">${entry ? entry.score : "-"}</td>
+      <td>${entry ? i + 1 : "-"}</td>
+      <td>${entry ? entry.username : "-"}</td>
+      <td>${entry ? entry.school : "-"}</td>
+      <td>${entry ? entry.time : "-"}</td>
     </tr>
 `;
         }
@@ -461,15 +445,14 @@
               1000
           )
         );
-        const score = Math.round((word.length * 1000) / timeSec);
-        saveLeaderboard({ username, school, word, time: timeSec, score });
+        saveLeaderboard({ username, school, word, time: timeSec });
         document.getElementById("gameContainer").innerHTML = `
           <h2 class="card-title mb-4 text-success text-center">Correct!</h2>
           <p class="text-center">The word was <strong>${word}</strong></p>
           <p class="text-center text-secondary" style="font-style:italic;">
             <span style="font-size:1.2em;">💡</span> Did you know? ${trivia}
           </p>
-          <p class="text-center mb-2"><strong>Time:</strong> ${timeSec} seconds<br><strong>Score:</strong> ${score}</p>
+          <p class="text-center mb-2"><strong>Time:</strong> ${timeSec} seconds</p>
           <div class="d-flex justify-content-center">
             <button id="homeBtn" class="btn btn-primary mt-3 px-5">Home</button>
           </div>
