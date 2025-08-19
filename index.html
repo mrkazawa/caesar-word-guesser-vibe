@@ -381,13 +381,13 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Encrypted Word</label>
-            <div class="form-control text-center mb-2" readonly style="font-weight:bold; font-size:1.2rem; color: red; text-transform: uppercase;">${encryptedWord}</div>
+            <div class="form-control text-center mb-2" readonly style="font-weight:bold; font-size:1.2rem; color: #e65100; text-transform: uppercase;">${encryptedWord}</div>
           </div>
           ${buildAlphabetTable(key)}
           <form id="answerForm">
             <div class="mb-3">
-              <label for="answer" class="form-label">Your Answer</label>
-              <input type="text" class="form-control" id="answer" name="answer" required autocomplete="off">
+              <label for="answer" class="form-label" style="color:#1565c0;">Your Answer (Find the Real Alphabet)</label>
+              <input type="text" class="form-control" id="answer" name="answer" required autocomplete="off" style="color:#1565c0; font-weight:bold;">
             </div>
             <div class="d-flex gap-2">
               <button type="button" id="backBtn" class="btn btn-outline-secondary">Back</button>
