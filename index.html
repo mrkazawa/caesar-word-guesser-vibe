@@ -47,8 +47,75 @@
       }
       function saveLeaderboard(entry) {
         const leaderboard = getLeaderboard();
+        // Add timestamp if not present
+        if (!entry.timestamp) {
+          entry.timestamp = new Date().toISOString();
+        }
         leaderboard.push(entry);
+        // Store all entries - no limit
         localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+      }
+      function censorPhone(phone) {
+        if (!phone || phone === "N/A") return phone;
+        const phoneStr = phone.toString();
+        if (phoneStr.length <= 4) return phoneStr;
+
+        // Show first 3 digits, mask middle digits, show last 2 digits
+        const start = phoneStr.substring(0, 3);
+        const end = phoneStr.substring(phoneStr.length - 2);
+        const middle = "*".repeat(Math.max(0, phoneStr.length - 5));
+
+        return start + middle + end;
+      }
+      function downloadCSV() {
+        const leaderboard = getLeaderboard();
+        if (leaderboard.length === 0) {
+          alert("No data to export!");
+          return;
+        }
+
+        // CSV headers
+        const headers = [
+          "#",
+          "Username",
+          "School",
+          "Phone",
+          "Time (s)",
+          "Word",
+          "Timestamp",
+        ];
+
+        // Convert data to CSV format
+        const csvData = leaderboard.map((entry, index) => {
+          return [
+            index + 1,
+            `"${entry.username || ""}"`,
+            `"${entry.school || ""}"`,
+            `"${entry.phone || ""}"`,
+            entry.time || "",
+            `"${entry.word || ""}"`,
+            `"${entry.timestamp || ""}"`,
+          ].join(",");
+        });
+
+        // Combine headers and data
+        const csvContent = [headers.join(","), ...csvData].join("\n");
+
+        // Create and download file
+        const blob = new Blob([csvContent], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute(
+          "download",
+          `caesar_players_${new Date().toISOString().split("T")[0]}.csv`
+        );
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
       function leaderboardTableHtml() {
         const leaderboard = getLeaderboard();
@@ -60,6 +127,7 @@
       <th>#</th>
       <th>Username</th>
       <th>School</th>
+      <th>Phone</th>
       <th>Time (s)</th>
     </tr>
   </thead>
@@ -72,6 +140,7 @@
       <td>${entry ? i + 1 : "-"}</td>
       <td>${entry ? entry.username : "-"}</td>
       <td>${entry ? entry.school : "-"}</td>
+      <td>${entry ? censorPhone(entry.phone || "N/A") : "-"}</td>
       <td>${entry ? entry.time : "-"}</td>
     </tr>
 `;
@@ -139,7 +208,11 @@
                 </div>
                 <div class="mb-3">
                   <label for="school" class="form-label">School</label>
-                  <input type="text" class="form-control" id="school" name="school" required />
+                  <input type="text" class="form-control" id="school" name="school" placeholder="Enter your school" required />
+                </div>
+                <div class="mb-3">
+                  <label for="phone" class="form-label">Phone Number</label>
+                  <input type="number" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required />
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Play</button>
               </form>
@@ -150,7 +223,10 @@
             <div class="col-md-7 col-12 ps-md-5 ps-4">
               <div class="d-flex align-items-center justify-content-between mb-4">
                 <h2 class="game-header text-center mb-0">Recent Players</h2>
-                <button id="clearLeaderboardBtn" class="btn btn-danger ms-3">Clear Table</button>
+                <div class="d-flex gap-2">
+                  <button id="downloadCSVBtn" class="btn btn-success">Download CSV</button>
+                  <button id="clearLeaderboardBtn" class="btn btn-danger">Clear Table</button>
+                </div>
               </div>
               <div id="leaderboardContainer">
                 ${leaderboardTableHtml()}
@@ -229,6 +305,25 @@
           .getElementById("startForm")
           .addEventListener("submit", startGame);
 
+        // Add phone number validation - only allow digits
+        const phoneInput = document.getElementById("phone");
+        if (phoneInput) {
+          phoneInput.addEventListener("input", function (e) {
+            // Remove any non-digit characters
+            e.target.value = e.target.value.replace(/[^0-9]/g, "");
+          });
+
+          phoneInput.addEventListener("keypress", function (e) {
+            // Prevent non-numeric key presses
+            if (
+              !/[0-9]/.test(e.key) &&
+              !["Backspace", "Delete", "Tab", "Enter"].includes(e.key)
+            ) {
+              e.preventDefault();
+            }
+          });
+        }
+
         // Add How to Play link handler
         setTimeout(function () {
           const howToPlayLink = document.getElementById("howToPlayLink");
@@ -242,6 +337,12 @@
             };
           }
         }, 0);
+
+        // Add download CSV button handler
+        const downloadBtn = document.getElementById("downloadCSVBtn");
+        if (downloadBtn) {
+          downloadBtn.onclick = downloadCSV;
+        }
 
         // Add clear leaderboard button handler
         const clearBtn = document.getElementById("clearLeaderboardBtn");
@@ -429,15 +530,19 @@
 
       // Render result screen
       function renderResult(word, trivia) {
-        // Get username and school from previous form values
+        // Get username, school, and phone from localStorage
         let username = localStorage.getItem("lastUsername") || "";
         let school = localStorage.getItem("lastSchool") || "";
+        let phone = localStorage.getItem("lastPhone") || "";
         // Fallback if not set
         if (!username && document.getElementById("username")) {
           username = document.getElementById("username").value;
         }
         if (!school && document.getElementById("school")) {
           school = document.getElementById("school").value;
+        }
+        if (!phone && document.getElementById("phone")) {
+          phone = document.getElementById("phone").value;
         }
         const timeSec = Math.max(
           1,
@@ -446,7 +551,7 @@
               1000
           )
         );
-        saveLeaderboard({ username, school, word, time: timeSec });
+        saveLeaderboard({ username, school, phone, word, time: timeSec });
         document.getElementById("gameContainer").innerHTML = `
           <h2 class="card-title mb-4 text-success text-center">Correct!</h2>
           <p class="text-center">The word was <strong>${word}</strong></p>
@@ -470,11 +575,13 @@
       // Start game handler
       function startGame(e) {
         e.preventDefault();
-        // Save username and school for later use
+        // Save username, school, and phone for later use
         const username = document.getElementById("username").value;
         const school = document.getElementById("school").value;
+        const phone = document.getElementById("phone").value;
         localStorage.setItem("lastUsername", username);
         localStorage.setItem("lastSchool", school);
+        localStorage.setItem("lastPhone", phone);
         renderQuestion();
       }
 
